@@ -7,9 +7,9 @@ const path = require('path');
 const config = require('./infrastructure/config');
 const helmet = require('helmet');
 const sanitization = require('login.dfe.sanitization');
-const healthCheck = require('login.dfe.healthcheck');
-const { getErrorHandler } = require('login.dfe.express-error-handling');
 
+const { getErrorHandler } = require('login.dfe.express-error-handling');
+const web  = require('./app/web');
 const app = express();
 app.use(helmet({
   noCache: true,
@@ -25,13 +25,13 @@ if (config.hostingEnvironment.env !== 'dev') {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(sanitization());
 app.set('view engine', 'ejs');
-app.set('views', path.resolve(__dirname, 'app'));
+app.set('views', path.resolve(__dirname, 'app/web/views'));
 app.use(expressLayouts);
 app.set('layout', 'layouts/layout');
 
-app.use('/healthcheck', healthCheck({
-  config,
-}));
+
+
+web.mountRoutes(app, config);
 
 
 // Error handing
