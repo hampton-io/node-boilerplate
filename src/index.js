@@ -6,9 +6,9 @@ const https = require('https');
 const path = require('path');
 const config = require('./infrastructure/config');
 const helmet = require('helmet');
-const sanitization = require('login.dfe.sanitization');
+const sanitization = require('authbox.sanitization');
 
-const { getErrorHandler } = require('login.dfe.express-error-handling');
+const { errorHandler } = require('./infrastructure/utils');
 const web  = require('./app/web');
 const app = express();
 app.use(helmet({
@@ -35,26 +35,10 @@ web.mountRoutes(app, config);
 
 
 // Error handing
-app.use(getErrorHandler({
-  logger,
-}));
+app.use(errorHandler(config, logger));
 
-if (config.hostingEnvironment.env === 'dev') {
-  app.proxy = true;
+const port = config.hostingEnvironment.port || process.env.PORT || 3000;
 
-  const options = {
-    key: config.hostingEnvironment.sslKey,
-    cert: config.hostingEnvironment.sslCert,
-    requestCert: false,
-    rejectUnauthorized: false,
-  };
-  const server = https.createServer(options, app);
-
-  server.listen(config.hostingEnvironment.port, () => {
-    logger.info(`Dev server listening on https://${config.hostingEnvironment.host}:${config.hostingEnvironment.port} with config:\n${JSON.stringify(config)}`);
-  });
-} else {
-  app.listen(process.env.PORT, () => {
-    logger.info(`Server listening on http://${config.hostingEnvironment.host}:${config.hostingEnvironment.port}`);
-  });
-}
+app.listen(port, () => {
+  logger.info(`${config.loggerSettings.applicationName} Server listening on http://localhost:${port}`);
+});

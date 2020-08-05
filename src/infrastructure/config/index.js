@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const Path = require('path');
+const defaultConfig = require('./../../../config/default.json');
 
 const getSettingsObject = (settings) => {
   try {
@@ -39,7 +40,7 @@ const fetchConfig = () => {
     }
   }
 
-  throw new Error('Missing configuration');
+  return defaultConfig;
 };
 
 module.exports = fetchConfig();

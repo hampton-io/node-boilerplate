@@ -2,7 +2,7 @@
 
 const winston = require('winston');
 const config = require('./../config');
-const WinstonSequelizeTransport = require('login.dfe.audit.winston-sequelize-transport');
+const WinstonSequelizeTransport = require('authbox.audit.winston-sequelize-transport');
 
 const logLevel = (config && config.loggerSettings && config.loggerSettings.logLevel) ? config.loggerSettings.logLevel : 'info';
 
